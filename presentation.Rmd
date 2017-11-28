@@ -48,8 +48,6 @@ library(data.table)
 library(ggplot2)
 library(gridExtra)
 
-setwd("D:/GoogleDrive/Labor/DR/Andmed/DESeq2")
-
 
 mirna_hor=read.table("mirna_hor.txt", sep="\t", header=T)
 mirna_ver<-read.table("mirna_ver.txt",header=T)
