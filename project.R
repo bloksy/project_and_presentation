@@ -11,7 +11,7 @@ library(gridExtra)
 
 
 ##### Data #####
-setwd("D:/GoogleDrive/Labor/DR/Andmed/DESeq2")
+# setwd("D:/GoogleDrive/Labor/DR/Andmed/DESeq2")
 
 
 mirna_hor=read.table("mirna_hor.txt", sep="\t", header=T)
@@ -19,12 +19,12 @@ mirna_ver<-read.table("mirna_ver.txt",header=T)
 
 # ### #mirna-mirna correlation analysis - mirmir ####
 # 
-# if(dir.exists("mir_mir")){
-#   dir.create("mir_mir")
-# }
-# 
-# 
-# setwd("D:/GoogleDrive/Labor/DR/Andmed/DESeq2/mir_mir")
+if(dir.exists("mir_mir")){
+  dir.create("mir_mir")
+}
+
+
+setwd("mir_mir")
 # 
 # 
 # colNR=2
@@ -48,7 +48,7 @@ mirna_ver<-read.table("mirna_ver.txt",header=T)
 # 
 # ###tulbad järjest#######
 # 
-setwd("D:/GoogleDrive/Labor/DR/Andmed/DESeq2/mir_mir")
+setwd("mir_mir")
 # 
 # failid=list.files()
 # koik_andmed=read.table(fail, header=T) ###algse matrixi suuruse esitamine
@@ -115,7 +115,7 @@ grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9,ncol=3)
 ####DATA####
 # rm(list = setdiff(ls(), lsf.str()))
 
-setwd("D:/GoogleDrive/Labor/DR/Andmed/DESeq2")
+setwd("..")
 mirna_hor=read.table("mirna_hor.txt", sep="\t", header=T)
 gene_ver<-read.table("gene_ver.txt", header=T)
 
@@ -125,7 +125,7 @@ gene_ver<-read.table("gene_ver.txt", header=T)
 #   dir.create("mir_gene")
 # }
 
-setwd("D:/GoogleDrive/Labor/DR/Andmed/DESeq2/mir_gene")
+setwd("mir_gene")
 
 # 
 # 
@@ -217,8 +217,8 @@ if(dir.exists("mir_gene_pearson")){
 }
 
 
-
-setwd("D:/GoogleDrive/Labor/DR/Andmed/DESeq2/mir_gene_pearson")
+setwd("..")
+setwd("mir_gene_pearson")
 
 
 

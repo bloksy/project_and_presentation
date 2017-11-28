@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>R course presentation</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Rain Inno" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# R course presentation
+### Rain Inno
+### 2017/11/29
+
+---
+
+
+class: left, top
+
+# Questions that need an answer
+
+### 1. Is mircoRNA expression correlated with other microRNAs?
+### 2. What are the genes that these microRNAs regulate?
+
+---
+class: left, top
+
+# Used dataset
+
+### 1. MicroRNA sequences n=50
+### 2. RNA sequences n=1000
+
+
+---
+class: left, top
+
+# Used packages
+
+* dplyr
+* tidyverse
+* stringr
+* data.table
+* ggplot2
+* DESeq2
+
+
+```
+## Warning: package 'dplyr' was built under R version 3.4.1
+```
+
+```
+## Warning: package 'tidyverse' was built under R version 3.4.1
+```
+
+```
+## Warning: package 'tidyr' was built under R version 3.4.1
+```
+
+```
+## Warning: package 'readr' was built under R version 3.4.1
+```
+
+```
+## Warning: package 'purrr' was built under R version 3.4.1
+```
+
+```
+## Warning: package 'gridExtra' was built under R version 3.4.2
+```
+
+---
+Using DESeq2 for expression correlation analysis
+```yaml
+
+ colNR=2
+ for(i in row.names(mirna_hor)){
+   for(j in row.names(mirna_ver)){
+     colNR=colNR+1
+     b&lt;-colnames(mirna_hor[colNR])
+     testTable=data.frame(mirna_hor[,colNR],mirna_hor$type)
+     a&lt;-str_replace(j,"-",".")
+     colnames(testTable)=c("mirna","type")
+     dds=DESeqDataSetFromMatrix(countData=mirna_ver, colData=testTable, design=~type+mirna)
+     dds=DESeq(dds,test="LRT",reduced=~1)
+     ddsReplace &lt;- replaceOutliers(dds)
+     ddsReplace &lt;- DESeq(ddsReplace)
+     res=results(ddsReplace)
+     write.table(res, file=paste0("mirna_",b,"_test_DESeq2.txt"))
+     print(b)
+   }
+ }
+
+```
+
+---
+Combine all results files
+
+```yaml
+ failid=list.files()
+ koik_andmed=read.table(fail, header=T)
+ for (fail in failid) {
+   id=unlist(strsplit(fail, "[_]"))[2]
+   print(id)
+   andmed=read.table(fail, header=T)
+   colnames(andmed)[colnames(andmed)=="padj"]&lt;-id
+   koik_andmed=cbind(koik_andmed, andmed[6])
+ }
+ 
+ write.table(koik_andmed, "mir_mir_koos.tsv", sep="\t", row.names=T, quote=F)
+ 
+mir_mir &lt;- read.table("mir_mir_koos.tsv", head=T)
+mir_mir &lt;- mir_mir[!(names(mir_mir) %in% c("baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj"))]
+mir_mir &lt;- setDT(mir_mir, keep.rownames = T)
+```
+
+```
+##         rn      miR.001      miR.002      miR.003      miR.004
+## 1: miR.001 3.457510e-51 9.958292e-01 2.938374e-04 2.383470e-01
+## 2: miR.002 1.920389e-01 9.227721e-17 6.180125e-01 5.694479e-01
+## 3: miR.003 1.574717e-01 5.340771e-01 1.182938e-38 1.441117e-01
+## 4: miR.004 2.699946e-01 9.855218e-02 3.423293e-05 4.249030e-68
+## 5: miR.005 3.552223e-01 2.782775e-01 1.026925e-07 4.579068e-04
+```
+
+---
+How many microRNAs expression is correlated
+
+
+```r
+colSums(mir_mir &lt; 0.00005)
+```
+
+```
+##      rn miR.001 miR.002 miR.003 miR.004 miR.005 miR.006 miR.007 miR.008 
+##       0       2      NA      13       4      15       1       1      14 
+## miR.009 miR.010 miR.011 miR.012 miR.013 miR.014 miR.015 miR.016 miR.017 
+##      14      10      NA       7       4      11       4       1       3 
+## miR.018 miR.019 miR.020 miR.021 miR.022 miR.023 miR.024 miR.025 miR.026 
+##       7       1       1       9       1       1       8       1      10 
+## miR.027 miR.028 miR.029 miR.030 miR.031 miR.032 miR.033 miR.034 miR.035 
+##       4       1      NA       2       1      11      14      12       8 
+## miR.036 miR.037 miR.038 miR.039 miR.040 miR.041 miR.042 miR.043 miR.044 
+##       3       3      NA       1      17       1       5       9      15 
+## miR.045 miR.046 miR.047 miR.048 miR.049 miR.050 
+##      14       1      10       1       1       2
+```
+---
+Arrenge by most interesting microRNA
+
+
+```r
+mir_mir&lt;-arrange(mir_mir, miR.003)
+```
+
+```
+## Warning: package 'bindrcpp' was built under R version 3.4.1
+```
+
+```r
+mir_mir[1:10,1]
+```
+
+```
+##  [1] "miR.003" "miR.034" "miR.040" "miR.008" "miR.033" "miR.005" "miR.011"
+##  [8] "miR.010" "miR.032" "miR.047"
+```
+
+
+---
+
+
+
+![](presentation_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+---
+
+
+```
+##          rn   miR.001   miR.002      miR.003   miR.004
+## 1: Geen0001 0.8751024 0.6654133 4.061125e-01 0.8042800
+## 2: Geen0002 0.8081239 0.5288347 1.043221e-09 0.2260213
+## 3: Geen0003 0.8514023 0.7403049 2.903912e-03 0.6603004
+## 4: Geen0004 0.8996710 0.7354190 3.529437e-01 0.5858389
+## 5: Geen0005 0.5956254 0.5048803 4.773322e-05 0.3572988
+```
+
+---
+How many microRNA and genes expression is correlated
+
+
+```r
+colSums(mir_gene &lt; 0.005)
+```
+
+```
+##      rn miR.001 miR.002 miR.003 miR.004 miR.005 miR.006 miR.007 miR.008 
+##       0       0       0     553      NA     606       0       0     599 
+## miR.009 miR.010 miR.011 miR.012 miR.013 miR.014 miR.015 miR.016 miR.017 
+##     453     189     476      77     140     476      19       0       2 
+## miR.018 miR.019 miR.020 miR.021 miR.022 miR.023 miR.024 miR.025 miR.026 
+##     387       0       8     149       0       2     468      NA     480 
+## miR.027 miR.028 miR.029 miR.030 miR.031 miR.032 miR.033 miR.034 miR.035 
+##       0       0       0       0       0     426     591     513     466 
+## miR.036 miR.037 miR.038 miR.039 miR.040 miR.041 miR.042 miR.043 miR.044 
+##       0       0     331     276     562       0     426     461     324 
+## miR.045 miR.046 miR.047 miR.048 miR.049 miR.050 
+##     306       0     436       4       0     110
+```
+---
+Arrenge by most interesting microRNA
+
+
+```r
+mir_gene&lt;-arrange(mir_gene, miR.003)
+
+mir_gene[1:10,1]
+```
+
+```
+##  [1] "Geen0019" "Geen0611" "Geen0439" "Geen0894" "Geen0401" "Geen0261"
+##  [7] "Geen0122" "Geen0111" "Geen0499" "Geen0605"
+```
+
+---
+
+
+
+![](presentation_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+---
+
+```yaml
+mirnaNR=0
+
+for(i in row.names(mirna_ver)){
+  mirnaNR=mirnaNR+1
+  print(mirnaNR)
+  sink(paste0("geen_",i,"_test_pearson.txt"),type="output")
+  print(i)
+  for(j in row.names(gene_ver)){
+    suhe.lm=cor(as.numeric(mirna_ver[i,]), as.numeric(gene_ver[j,],method="pearson"))
+    print(suhe.lm)
+  }
+  sink()
+}
+```
+
+
+
+```
+##          rn    miR.001     miR.002    miR.003     miR.004
+## 1: Geen0001 -0.2245397 -0.08630318  0.1147369 -0.22807690
+## 2: Geen0002 -0.2015254  0.25143000  0.7156378 -0.41581160
+## 3: Geen0003 -0.3179184  0.11542810 -0.3243152  0.08526987
+## 4: Geen0004 -0.1057517 -0.11638080  0.1021850 -0.28498470
+## 5: Geen0005 -0.3630999  0.39334940  0.7032048 -0.19408340
+```
+
+---
+How many microRNA and genes expression is negatively correlated
+
+
+```r
+colSums(mir_gene_pearson &lt; 0)
+```
+
+```
+##      rn miR.001 miR.002 miR.003 miR.004 miR.005 miR.006 miR.007 miR.008 
+##       0     682     271     214     795     222     380     333     224 
+## miR.009 miR.010 miR.011 miR.012 miR.013 miR.014 miR.015 miR.016 miR.017 
+##     205     190     781     247     277     236     781     298     753 
+## miR.018 miR.019 miR.020 miR.021 miR.022 miR.023 miR.024 miR.025 miR.026 
+##     221     259     721     214     549     258     233     370     225 
+## miR.027 miR.028 miR.029 miR.030 miR.031 miR.032 miR.033 miR.034 miR.035 
+##     203     774     789     280     780     756     782     779     237 
+## miR.036 miR.037 miR.038 miR.039 miR.040 miR.041 miR.042 miR.043 miR.044 
+##     742     301     229     279     218     219     223     243     195 
+## miR.045 miR.046 miR.047 miR.048 miR.049 miR.050 
+##     206     428     776     637     456     286
+```
+---
+Arrenge by most interesting microRNA
+
+
+```r
+mir_gene_pearson&lt;-arrange(mir_gene_pearson, miR.003)
+
+mir_gene_pearson[1:10,1:4]
+```
+
+```
+##          rn    miR.001     miR.002    miR.003
+## 1  Geen0290 0.35445800 -0.16687190 -0.6679712
+## 2  Geen0914 0.19739790 -0.13389200 -0.6664071
+## 3  Geen0341 0.12640300 -0.26801490 -0.6342277
+## 4  Geen0038 0.07465426 -0.05374680 -0.6280365
+## 5  Geen0818 0.09148663 -0.18840540 -0.6234437
+## 6  Geen0218 0.29588240 -0.26645500 -0.6227351
+## 7  Geen0177 0.18969530 -0.19043410 -0.6208832
+## 8  Geen0942 0.01230912 -0.20430310 -0.6191277
+## 9  Geen0370 0.33774520 -0.19605940 -0.6165763
+## 10 Geen0033 0.26685900 -0.03974038 -0.6082519
+```
+
+---
+
+
+
+![](presentation_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+---
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
