@@ -1,0 +1,319 @@
+---
+title: "R course presentation"
+author: "Rain Inno"
+date: "2017/11/29"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+class: left, top
+
+# Questions that need an answer
+
+### 1. Is mircoRNA expression correlated with other microRNAs?
+### 2. What are the genes that these microRNAs regulate?
+
+---
+class: left, top
+
+# Used dataset
+
+### 1. MicroRNA sequences n=50
+### 2. RNA sequences n=1000
+
+
+---
+class: left, top
+
+# Used packages
+
+* dplyr
+* tidyverse
+* stringr
+* data.table
+* ggplot2
+* DESeq2
+
+```{r, echo=FALSE, error=FALSE, message=FALSE, gache=FALSE}
+library(dplyr)
+library(tidyverse)
+library(stringr)
+require(DESeq2) #analysis itself
+library(data.table)
+library(ggplot2)
+library(gridExtra)
+
+setwd("D:/GoogleDrive/Labor/DR/Andmed/DESeq2")
+
+
+mirna_hor=read.table("mirna_hor.txt", sep="\t", header=T)
+mirna_ver<-read.table("mirna_ver.txt",header=T)
+gene_ver<-read.table("gene_ver.txt", header=T)
+gene_hor = t(gene_ver)
+
+
+```
+
+---
+Using DESeq2 for expression correlation analysis
+```yaml
+
+ colNR=2
+ for(i in row.names(mirna_hor)){
+   for(j in row.names(mirna_ver)){
+     colNR=colNR+1
+     b<-colnames(mirna_hor[colNR])
+     testTable=data.frame(mirna_hor[,colNR],mirna_hor$type)
+     a<-str_replace(j,"-",".")
+     colnames(testTable)=c("mirna","type")
+     dds=DESeqDataSetFromMatrix(countData=mirna_ver, colData=testTable, design=~type+mirna)
+     dds=DESeq(dds,test="LRT",reduced=~1)
+     ddsReplace <- replaceOutliers(dds)
+     ddsReplace <- DESeq(ddsReplace)
+     res=results(ddsReplace)
+     write.table(res, file=paste0("mirna_",b,"_test_DESeq2.txt"))
+     print(b)
+   }
+ }
+
+```
+
+---
+Combine all results files
+
+```yaml
+ failid=list.files()
+ koik_andmed=read.table(fail, header=T)
+ for (fail in failid) {
+   id=unlist(strsplit(fail, "[_]"))[2]
+   print(id)
+   andmed=read.table(fail, header=T)
+   colnames(andmed)[colnames(andmed)=="padj"]<-id
+   koik_andmed=cbind(koik_andmed, andmed[6])
+ }
+ 
+ write.table(koik_andmed, "mir_mir_koos.tsv", sep="\t", row.names=T, quote=F)
+ 
+mir_mir <- read.table("mir_mir_koos.tsv", head=T)
+mir_mir <- mir_mir[!(names(mir_mir) %in% c("baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj"))]
+mir_mir <- setDT(mir_mir, keep.rownames = T)
+```
+```{r, echo=FALSE}
+
+mir_mir <- read.table("mir_mir_koos.tsv", head=T)
+mir_mir <- mir_mir[!(names(mir_mir) %in% c("baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj"))]
+mir_mir <- setDT(mir_mir, keep.rownames = T)
+print(mir_mir[1:5,1:5])
+
+
+```
+
+---
+How many microRNAs expression is correlated
+
+```{r, error=TRUE}
+
+colSums(mir_mir < 0.00005)
+
+```
+---
+Arrenge by most interesting microRNA
+
+```{r, error=TRUE}
+
+mir_mir<-arrange(mir_mir, miR.003)
+
+mir_mir[1:10,1]
+
+```
+
+
+---
+
+```{r,echo=FALSE}
+
+top_mirna <- mirna_hor[mir_mir[1,1]]
+
+
+top10 <- mir_mir[1:10,1]
+top10_2 <- mirna_hor[,mir_mir[2,1]]
+top10_3 <- mirna_hor[,mir_mir[3,1]]
+top10_4 <- mirna_hor[,mir_mir[4,1]]
+top10_5 <- mirna_hor[,mir_mir[5,1]]
+top10_6 <- mirna_hor[,mir_mir[6,1]]
+top10_7 <- mirna_hor[,mir_mir[7,1]]
+top10_8 <- mirna_hor[,mir_mir[8,1]]
+top10_9 <- mirna_hor[,mir_mir[9,1]]
+top10_10 <- mirna_hor[,mir_mir[10,1]]
+
+
+p1 <- mirna_hor %>% ggplot(aes(top_mirna, top10_2 	))+geom_point()+geom_smooth(method="lm")
+p2 <- mirna_hor %>% ggplot(aes(top_mirna, top10_3 	))+geom_point()+geom_smooth(method="lm")
+p3 <- mirna_hor %>% ggplot(aes(top_mirna, top10_4 	))+geom_point()+geom_smooth(method="lm")
+p4 <- mirna_hor %>% ggplot(aes(top_mirna, top10_5 	))+geom_point()+geom_smooth(method="lm")
+p5 <- mirna_hor %>% ggplot(aes(top_mirna, top10_6 	))+geom_point()+geom_smooth(method="lm")
+p6 <- mirna_hor %>% ggplot(aes(top_mirna, top10_7 	))+geom_point()+geom_smooth(method="lm")
+p7 <- mirna_hor %>% ggplot(aes(top_mirna, top10_8 	))+geom_point()+geom_smooth(method="lm")
+p8 <- mirna_hor %>% ggplot(aes(top_mirna, top10_9 	))+geom_point()+geom_smooth(method="lm")
+p9 <- mirna_hor %>% ggplot(aes(top_mirna, top10_10 	))+geom_point()+geom_smooth(method="lm")
+
+```
+
+```{r, echo=FALSE, error=TRUE, message=FALSE, fig.width=12, fig.height=8}
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9,ncol=3)
+
+```
+
+---
+
+```{r, echo=FALSE}
+
+mir_gene <- read.table("mir_gene_koos.tsv", head=T, sep="\t")
+mir_gene=mir_gene[!(names(mir_gene) %in% c("baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj"))]
+mir_gene <- setDT(mir_gene, keep.rownames = T)
+rn<-mir_gene$rn
+print(mir_gene[1:5,1:5])
+
+
+```
+
+---
+How many microRNA and genes expression is correlated
+
+```{r, error=TRUE}
+
+colSums(mir_gene < 0.005)
+
+```
+---
+Arrenge by most interesting microRNA
+
+```{r, error=TRUE}
+
+mir_gene<-arrange(mir_gene, miR.003)
+
+mir_gene[1:10,1]
+
+```
+
+---
+
+```{r,echo=FALSE, messages=FALSE}
+
+top10_2 <- gene_hor[,mir_gene[1,1]]
+top10_3 <- gene_hor[,mir_gene[2,1]]
+top10_4 <- gene_hor[,mir_gene[3,1]]
+top10_5 <- gene_hor[,mir_gene[4,1]]
+top10_6 <- gene_hor[,mir_gene[5,1]]
+top10_7 <- gene_hor[,mir_gene[6,1]]
+top10_8 <- gene_hor[,mir_gene[7,1]]
+top10_9 <- gene_hor[,mir_gene[8,1]]
+top10_10 <- gene_hor[,mir_gene[9,1]]
+
+
+p1 <- mirna_hor %>% ggplot(aes(top_mirna, top10_2 	))+geom_point()+geom_smooth(method="lm")
+p2 <- mirna_hor %>% ggplot(aes(top_mirna, top10_3 	))+geom_point()+geom_smooth(method="lm")
+p3 <- mirna_hor %>% ggplot(aes(top_mirna, top10_4 	))+geom_point()+geom_smooth(method="lm")
+p4 <- mirna_hor %>% ggplot(aes(top_mirna, top10_5 	))+geom_point()+geom_smooth(method="lm")
+p5 <- mirna_hor %>% ggplot(aes(top_mirna, top10_6 	))+geom_point()+geom_smooth(method="lm")
+p6 <- mirna_hor %>% ggplot(aes(top_mirna, top10_7 	))+geom_point()+geom_smooth(method="lm")
+p7 <- mirna_hor %>% ggplot(aes(top_mirna, top10_8 	))+geom_point()+geom_smooth(method="lm")
+p8 <- mirna_hor %>% ggplot(aes(top_mirna, top10_9 	))+geom_point()+geom_smooth(method="lm")
+p9 <- mirna_hor %>% ggplot(aes(top_mirna, top10_10 	))+geom_point()+geom_smooth(method="lm")
+
+```
+
+```{r, echo=FALSE, error=TRUE, message=FALSE, fig.width=12, fig.height=8}
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, ncol=3)
+
+```
+---
+
+```yaml
+mirnaNR=0
+
+for(i in row.names(mirna_ver)){
+  mirnaNR=mirnaNR+1
+  print(mirnaNR)
+  sink(paste0("geen_",i,"_test_pearson.txt"),type="output")
+  print(i)
+  for(j in row.names(gene_ver)){
+    suhe.lm=cor(as.numeric(mirna_ver[i,]), as.numeric(gene_ver[j,],method="pearson"))
+    print(suhe.lm)
+  }
+  sink()
+}
+```
+
+
+```{r, echo=FALSE}
+
+mir_gene_pearson <- read.table("mir_gene_pearson_koos.tsv", head=T, sep="\t")
+mir_gene_pearson=mir_gene_pearson[!(names(mir_gene_pearson) %in% c("X.1.", "miR.001.1"))]
+mir_gene_pearson <- setDT(mir_gene_pearson, keep.rownames = T)
+mir_gene_pearson$rn <- rn
+
+head(mir_gene_pearson[1:5,1:5])
+
+
+```
+
+---
+How many microRNA and genes expression is negatively correlated
+
+```{r, error=TRUE}
+
+colSums(mir_gene_pearson < 0)
+
+```
+---
+Arrenge by most interesting microRNA
+
+```{r, error=TRUE}
+
+mir_gene_pearson<-arrange(mir_gene_pearson, miR.003)
+
+mir_gene_pearson[1:10,1:4]
+
+```
+
+---
+
+```{r,echo=FALSE, messages=FALSE}
+
+top10_2 <- gene_hor[,mir_gene_pearson[1,1]]
+top10_3 <- gene_hor[,mir_gene_pearson[2,1]]
+top10_4 <- gene_hor[,mir_gene_pearson[3,1]]
+top10_5 <- gene_hor[,mir_gene_pearson[4,1]]
+top10_6 <- gene_hor[,mir_gene_pearson[5,1]]
+top10_7 <- gene_hor[,mir_gene_pearson[6,1]]
+top10_8 <- gene_hor[,mir_gene_pearson[7,1]]
+top10_9 <- gene_hor[,mir_gene_pearson[8,1]]
+top10_10 <- gene_hor[,mir_gene_pearson[9,1]]
+
+
+p1 <- mirna_hor %>% ggplot(aes(top_mirna, top10_2 	))+geom_point()+geom_smooth(method="lm")
+p2 <- mirna_hor %>% ggplot(aes(top_mirna, top10_3 	))+geom_point()+geom_smooth(method="lm")
+p3 <- mirna_hor %>% ggplot(aes(top_mirna, top10_4 	))+geom_point()+geom_smooth(method="lm")
+p4 <- mirna_hor %>% ggplot(aes(top_mirna, top10_5 	))+geom_point()+geom_smooth(method="lm")
+p5 <- mirna_hor %>% ggplot(aes(top_mirna, top10_6 	))+geom_point()+geom_smooth(method="lm")
+p6 <- mirna_hor %>% ggplot(aes(top_mirna, top10_7 	))+geom_point()+geom_smooth(method="lm")
+p7 <- mirna_hor %>% ggplot(aes(top_mirna, top10_8 	))+geom_point()+geom_smooth(method="lm")
+p8 <- mirna_hor %>% ggplot(aes(top_mirna, top10_9 	))+geom_point()+geom_smooth(method="lm")
+p9 <- mirna_hor %>% ggplot(aes(top_mirna, top10_10 	))+geom_point()+geom_smooth(method="lm")
+
+```
+
+```{r, echo=FALSE, error=TRUE, message=FALSE, fig.width=12, fig.height=8}
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, ncol=3)
+
+```
+---
