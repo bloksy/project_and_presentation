@@ -45,31 +45,9 @@ class: left, top
 * data.table
 * ggplot2
 * DESeq2
+* knitr
 
 
-```
-## Warning: package 'dplyr' was built under R version 3.4.1
-```
-
-```
-## Warning: package 'tidyverse' was built under R version 3.4.1
-```
-
-```
-## Warning: package 'tidyr' was built under R version 3.4.1
-```
-
-```
-## Warning: package 'readr' was built under R version 3.4.1
-```
-
-```
-## Warning: package 'purrr' was built under R version 3.4.1
-```
-
-```
-## Warning: package 'gridExtra' was built under R version 3.4.2
-```
 
 ---
 Using DESeq2 for expression correlation analysis
@@ -115,15 +93,68 @@ mir_mir &lt;- read.table("mir_mir_koos.tsv", head=T)
 mir_mir &lt;- mir_mir[!(names(mir_mir) %in% c("baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj"))]
 mir_mir &lt;- setDT(mir_mir, keep.rownames = T)
 ```
+---
 
-```
-##         rn      miR.001      miR.002      miR.003      miR.004
-## 1: miR.001 3.457510e-51 9.958292e-01 2.938374e-04 2.383470e-01
-## 2: miR.002 1.920389e-01 9.227721e-17 6.180125e-01 5.694479e-01
-## 3: miR.003 1.574717e-01 5.340771e-01 1.182938e-38 1.441117e-01
-## 4: miR.004 2.699946e-01 9.855218e-02 3.423293e-05 4.249030e-68
-## 5: miR.005 3.552223e-01 2.782775e-01 1.026925e-07 4.579068e-04
-```
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; rn &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.001 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.002 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.003 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.004 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.005 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.006 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; miR.001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9958292 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0002938 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2383470 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0034579 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5693178 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; miR.002 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1920389 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6180125 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5694479 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6762897 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4553195 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; miR.003 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1574717 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5340771 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1441117 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000814 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8189657 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; miR.004 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2699946 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0985522 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000342 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4261338 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; miR.005 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3552223 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2782775 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0004579 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6624123 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 ---
 How many microRNAs expression is correlated
@@ -177,15 +208,66 @@ mir_mir[1:10,1]
 
 ---
 
-
-```
-##          rn   miR.001   miR.002      miR.003   miR.004
-## 1: Geen0001 0.8751024 0.6654133 4.061125e-01 0.8042800
-## 2: Geen0002 0.8081239 0.5288347 1.043221e-09 0.2260213
-## 3: Geen0003 0.8514023 0.7403049 2.903912e-03 0.6603004
-## 4: Geen0004 0.8996710 0.7354190 3.529437e-01 0.5858389
-## 5: Geen0005 0.5956254 0.5048803 4.773322e-05 0.3572988
-```
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; rn &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.001 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.002 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.003 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.004 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.005 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.006 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8751024 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6654133 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4061125 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8042800 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5986431 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5083231 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0002 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8081239 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5288347 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2260213 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7272450 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0003 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8514023 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7403049 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0029039 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6603004 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000491 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3287596 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0004 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8996710 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7354190 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3529437 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5858389 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7870474 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9703976 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0005 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5956254 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5048803 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000477 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3572988 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0000004 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5712523 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 ---
 How many microRNA and genes expression is correlated
@@ -249,14 +331,68 @@ for(i in row.names(mirna_ver)){
 
 
 
-```
-##          rn    miR.001     miR.002    miR.003     miR.004
-## 1: Geen0001 -0.2245397 -0.08630318  0.1147369 -0.22807690
-## 2: Geen0002 -0.2015254  0.25143000  0.7156378 -0.41581160
-## 3: Geen0003 -0.3179184  0.11542810 -0.3243152  0.08526987
-## 4: Geen0004 -0.1057517 -0.11638080  0.1021850 -0.28498470
-## 5: Geen0005 -0.3630999  0.39334940  0.7032048 -0.19408340
-```
+
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; rn &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.001 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.002 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.003 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.004 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.005 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.006 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.2245397 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.0863032 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1147369 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.2280769 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1462426 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.0549005 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0002 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.2015254 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2514300 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7156378 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.4158116 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7460596 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0905252 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0003 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.3179184 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1154281 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.3243152 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0852699 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.4744500 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.0600907 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0004 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.1057517 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.1163808 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1021850 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.2849847 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1777090 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0541840 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0005 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.3630999 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3933494 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7032048 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.1940834 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4705666 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2893276 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 ---
 How many microRNA and genes expression is negatively correlated
@@ -287,28 +423,87 @@ Arrenge by most interesting microRNA
 ```r
 mir_gene_pearson&lt;-arrange(mir_gene_pearson, miR.003)
 
-mir_gene_pearson[1:10,1:4]
+knitr::kable(mir_gene_pearson[1:10,1:4], format = "html")
 ```
 
-```
-##          rn    miR.001     miR.002    miR.003
-## 1  Geen0290 0.35445800 -0.16687190 -0.6679712
-## 2  Geen0914 0.19739790 -0.13389200 -0.6664071
-## 3  Geen0341 0.12640300 -0.26801490 -0.6342277
-## 4  Geen0038 0.07465426 -0.05374680 -0.6280365
-## 5  Geen0818 0.09148663 -0.18840540 -0.6234437
-## 6  Geen0218 0.29588240 -0.26645500 -0.6227351
-## 7  Geen0177 0.18969530 -0.19043410 -0.6208832
-## 8  Geen0942 0.01230912 -0.20430310 -0.6191277
-## 9  Geen0370 0.33774520 -0.19605940 -0.6165763
-## 10 Geen0033 0.26685900 -0.03974038 -0.6082519
-```
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; rn &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.001 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.002 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; miR.003 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0290 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3544580 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.1668719 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.6679712 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0914 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1973979 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.1338920 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.6664071 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0341 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1264030 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.2680149 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.6342277 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0038 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0746543 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.0537468 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.6280365 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0818 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0914866 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.1884054 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.6234437 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0218 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2958824 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.2664550 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.6227351 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0177 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1896953 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.1904341 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.6208832 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0942 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0123091 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.2043031 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.6191277 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0370 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3377452 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.1960594 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.6165763 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Geen0033 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2668590 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.0397404 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.6082519 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 ---
 
 
 
-![](presentation_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+![](presentation_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 ---
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
